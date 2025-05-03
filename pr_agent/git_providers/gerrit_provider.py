@@ -17,11 +17,11 @@ from pr_agent.git_providers.git_provider import GitProvider
 from pr_agent.algo.types import EDIT_TYPE, FilePatchInfo
 from pr_agent.git_providers.local_git_provider import PullRequestMimic
 from pr_agent.log import get_logger
+from security import safe_command
 
 
 def _call(*command, **kwargs) -> (int, str, str):
-    res = subprocess.run(
-        command,
+    res = safe_command.run(subprocess.run, command,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         check=True,
