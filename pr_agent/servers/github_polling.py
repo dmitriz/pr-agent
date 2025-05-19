@@ -4,13 +4,13 @@ from collections import deque
 import traceback
 from datetime import datetime, timezone
 import time
-import requests
 import aiohttp
 
 from pr_agent.agent.pr_agent import PRAgent
 from pr_agent.config_loader import get_settings
 from pr_agent.git_providers import get_git_provider
 from pr_agent.log import LoggingFormat, get_logger, setup_logger
+from security import safe_requests
 
 setup_logger(fmt=LoggingFormat.JSON, level="DEBUG")
 NOTIFICATION_URL = "https://api.github.com/notifications"
@@ -113,7 +113,7 @@ async def is_valid_notification(notification, headers, handled_ids, session, use
                         else: # we could not find the user tag in the latest comment. Check previous comments
                             # get all comments in the PR
                             requests_url = f"{pr_url}/comments".replace("pulls", "issues")
-                            comments_response = requests.get(requests_url, headers=headers)
+                            comments_response = safe_requests.get(requests_url, headers=headers)
                             comments = comments_response.json()[::-1]
                             max_comment_to_scan = 4
                             for comment in comments[:max_comment_to_scan]:

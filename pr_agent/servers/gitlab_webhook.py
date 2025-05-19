@@ -18,6 +18,7 @@ from pr_agent.config_loader import get_settings, global_settings
 from pr_agent.git_providers.utils import apply_repo_settings
 from pr_agent.log import LoggingFormat, get_logger, setup_logger
 from pr_agent.secret_providers import get_secret_provider
+from security import safe_requests
 
 setup_logger(fmt=LoggingFormat.JSON, level="DEBUG")
 router = APIRouter()
@@ -27,13 +28,12 @@ secret_provider = get_secret_provider() if get_settings().get("CONFIG.SECRET_PRO
 
 async def get_mr_url_from_commit_sha(commit_sha, gitlab_token, project_id):
     try:
-        import requests
         headers = {
             'Private-Token': f'{gitlab_token}'
         }
         # API endpoint to find MRs containing the commit
         gitlab_url = get_settings().get("GITLAB.URL", 'https://gitlab.com')
-        response = requests.get(
+        response = safe_requests.get(
             f'{gitlab_url}/api/v4/projects/{project_id}/repository/commits/{commit_sha}/merge_requests',
             headers=headers
         )
