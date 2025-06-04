@@ -323,7 +323,7 @@ class PRCodeSuggestions:
     async def _get_prediction(self, model: str, patches_diff: str) -> dict:
         variables = copy.deepcopy(self.vars)
         variables["diff"] = patches_diff  # update diff
-        environment = Environment(undefined=StrictUndefined)
+        environment = Environment(undefined=StrictUndefined, autoescape=True)
         system_prompt = environment.from_string(self.pr_code_suggestions_prompt_system).render(variables)
         user_prompt = environment.from_string(get_settings().pr_code_suggestions_prompt.user).render(variables)
         response, finish_reason = await self.ai_handler.chat_completion(
@@ -585,7 +585,7 @@ class PRCodeSuggestions:
 
             variables = {'suggestion_list': suggestion_list, 'suggestion_str': suggestion_str}
             model = get_settings().config.model
-            environment = Environment(undefined=StrictUndefined)
+            environment = Environment(undefined=StrictUndefined, autoescape=True)
             system_prompt = environment.from_string(get_settings().pr_sort_code_suggestions_prompt.system).render(
                 variables)
             user_prompt = environment.from_string(get_settings().pr_sort_code_suggestions_prompt.user).render(variables)
@@ -747,7 +747,7 @@ class PRCodeSuggestions:
                          'suggestion_str': suggestion_str,
                          "diff": patches_diff,
                          'num_code_suggestions': len(suggestion_list)}
-            environment = Environment(undefined=StrictUndefined)
+            environment = Environment(undefined=StrictUndefined, autoescape=True)
             system_prompt_reflect = environment.from_string(
                 get_settings().pr_code_suggestions_reflect_prompt.system).render(
                 variables)

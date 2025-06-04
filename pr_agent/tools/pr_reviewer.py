@@ -186,7 +186,7 @@ class PRReviewer:
         variables = copy.deepcopy(self.vars)
         variables["diff"] = self.patches_diff  # update diff
 
-        environment = Environment(undefined=StrictUndefined)
+        environment = Environment(undefined=StrictUndefined, autoescape=True)
         system_prompt = environment.from_string(get_settings().pr_review_prompt.system).render(variables)
         user_prompt = environment.from_string(get_settings().pr_review_prompt.user).render(variables)
 
