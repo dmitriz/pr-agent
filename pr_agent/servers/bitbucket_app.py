@@ -55,7 +55,7 @@ async def get_bearer_token(shared_secret: str, client_key: str):
             'Authorization': f'JWT {token}',
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-        response = requests.request("POST", url, headers=headers, data=payload)
+        response = requests.request("POST", url, headers=headers, data=payload, timeout=60)
         bearer_token = response.json()["access_token"]
         return bearer_token
     except Exception as e:

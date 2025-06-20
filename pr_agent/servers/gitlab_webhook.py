@@ -35,8 +35,8 @@ async def get_mr_url_from_commit_sha(commit_sha, gitlab_token, project_id):
         gitlab_url = get_settings().get("GITLAB.URL", 'https://gitlab.com')
         response = requests.get(
             f'{gitlab_url}/api/v4/projects/{project_id}/repository/commits/{commit_sha}/merge_requests',
-            headers=headers
-        )
+            headers=headers, 
+        timeout=60)
         merge_requests = response.json()
         if merge_requests and response.status_code == 200:
             pr_url = merge_requests[0]['web_url']

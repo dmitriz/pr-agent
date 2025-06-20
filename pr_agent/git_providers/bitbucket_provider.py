@@ -56,7 +56,7 @@ class BitbucketProvider(GitProvider):
         try:
             url = (f"https://api.bitbucket.org/2.0/repositories/{self.workspace_slug}/{self.repo_slug}/src/"
                    f"{self.pr.destination_branch}/.pr_agent.toml")
-            response = requests.request("GET", url, headers=self.headers)
+            response = requests.request("GET", url, headers=self.headers, timeout=60)
             if response.status_code == 404:  # not found
                 return ""
             contents = response.text.encode('utf-8')
@@ -364,8 +364,8 @@ class BitbucketProvider(GitProvider):
             },
         })
         response = requests.request(
-            "POST", self.bitbucket_comment_api_url, data=payload, headers=self.headers
-        )
+            "POST", self.bitbucket_comment_api_url, data=payload, headers=self.headers, 
+        timeout=60)
         return response
 
     def get_line_link(self, relevant_file: str, relevant_line_start: int, relevant_line_end: int = None) -> str:
@@ -478,7 +478,7 @@ class BitbucketProvider(GitProvider):
                 branch = self.pr.data["destination"]["commit"]["hash"]
             url = (f"https://api.bitbucket.org/2.0/repositories/{self.workspace_slug}/{self.repo_slug}/src/"
                    f"{branch}/{file_path}")
-            response = requests.request("GET", url, headers=self.headers)
+            response = requests.request("GET", url, headers=self.headers, timeout=60)
             if response.status_code == 404:  # not found
                 return ""
             contents = response.text
@@ -500,13 +500,13 @@ class BitbucketProvider(GitProvider):
         }
         headers = {'Authorization': self.headers['Authorization']} if 'Authorization' in self.headers else {}
         try:
-            requests.request("POST", url, headers=headers, data=data, files=files)
+            requests.request("POST", url, headers=headers, data=data, files=files, timeout=60)
         except Exception:
             get_logger().exception(f"Failed to create empty file {file_path} in branch {branch}")
 
     def _get_pr_file_content(self, remote_link: str):
         try:
-            response = requests.request("GET", remote_link, headers=self.headers)
+            response = requests.request("GET", remote_link, headers=self.headers, timeout=60)
             if response.status_code == 404:  # not found
                 return ""
             contents = response.text
@@ -525,7 +525,7 @@ class BitbucketProvider(GitProvider):
 
         })
 
-        response = requests.request("PUT", self.bitbucket_pull_request_api_url, headers=self.headers, data=payload)
+        response = requests.request("PUT", self.bitbucket_pull_request_api_url, headers=self.headers, data=payload, timeout=60)
         try:
             if response.status_code != 200:
                 get_logger().info(f"Failed to update description, error code: {response.status_code}")
